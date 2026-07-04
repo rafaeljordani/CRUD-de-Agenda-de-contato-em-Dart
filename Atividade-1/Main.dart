@@ -7,7 +7,7 @@ List<String> emailsList = [];
 int indiceSolicitado = 0;
 main() {
   nomesList.add('rafael');
-  telefonesList.add('1234567891');
+  telefonesList.add('1234567890');
   emailsList.add('rafael@gmail.com');
   menu();
 }
@@ -39,11 +39,10 @@ void menu() {
         }
       case '5':
         {
-          buscaPorNome();
+          buscarPorNome();
         }
       case '6':
         {
-          fim();
           return;
         }
     }
@@ -74,10 +73,6 @@ void removerContato() {
   }
 }
 
-void fim() {
-  print('fim');
-}
-
 int validarIndece(String? removeEdit) {
   while (true) {
     stdout.write('Digite o indice do contato que deseja $removeEdit: ');
@@ -100,7 +95,7 @@ int validarIndece(String? removeEdit) {
   }
 }
 
-String validarNome() {
+String validarNome({int? indiceIgnorar}) {
   String nomeValidar = '';
   bool validar = false;
 
@@ -195,7 +190,7 @@ void editarContatoDaLista() {
 
 //PARTE 2
 
-void buscaPorNome() {
+void buscarPorNome() {
   if (temContatoSalvo()) {
     procurarPorNome();
   }
@@ -221,11 +216,12 @@ void procurarPorNome() {
   }
 }
 
-bool verificarDuplicata(String nome) {
+bool verificarDuplicata(String nome, {int? indiceIgnorar}) {
   String nomeMinusculo = nome.toLowerCase();
   bool temRepetido = false;
 
   for (int i = 0; i < nomesList.length; i++) {
+    if (i == indiceIgnorar) continue;
     if (nomeMinusculo == nomesList[i].toLowerCase()) {
       temRepetido = true;
     }
