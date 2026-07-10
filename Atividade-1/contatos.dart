@@ -1,6 +1,4 @@
-import 'Main.dart';
-
-class Contato {
+abstract class Contato {
   String nome;
   String telefone;
   String email;

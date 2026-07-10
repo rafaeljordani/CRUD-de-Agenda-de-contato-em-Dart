@@ -1,18 +1,40 @@
+import 'dart:isolate';
+
 import 'Main.dart';
+import 'contato_empresarial.dart';
+import 'contato_pessoal.dart';
 import 'contatos.dart';
 import 'dart:io';
 
 class Agenda {
-  List<Contato> _contatos = [];
+  List<Contato> contatos = [];
 
   void adicionarContato() {
     String nome = validarNome();
     String telefone = validarTelefone();
     String email = validarEmail();
 
-    Contato contato = Contato(nome, telefone, email);
+    if (empresaOuPessoal() == 1) {
+      String apelido = validarApelidoOuEmpresa(1);
 
-    contatos.add(contato);
+      ContatoPessoal contatoPessoal = ContatoPessoal(
+        nome,
+        telefone,
+        email,
+        apelido,
+      );
+    } else if (empresaOuPessoal() == 2) {
+      String empresa = validarApelidoOuEmpresa(2);
+
+      ContatoEmpresarial contatoEmpresarial = ContatoEmpresarial(
+        nome,
+        telefone,
+        email,
+        empresa,
+      );
+    }
+
+    // contatos.add(contato); lembra de renovar isso aqui
 
     print('Contao salvo');
   }
@@ -205,5 +227,48 @@ class Agenda {
     return false;
   }
 
-  // Lembrar de no final colocar tudo em ToLowerCase
+  // Refatoracao para OOP
+
+  int empresaOuPessoal() {
+    while (true) {
+      stdout.write(
+        'Esse contato é uma conta pessoal ou Empresarial? \n 1: Pessoal 2: Empresarial',
+      );
+      int numOpcao = int.tryParse(stdin.readLineSync() ?? '0') ?? 0;
+      if ((numOpcao != 1) || (numOpcao != 2)) {
+        print('Resposta invalida, tente novamente');
+        continue;
+      } else if (numOpcao == 1) {
+        return 1;
+      } else if (numOpcao == 2) {
+        return 2;
+      }
+    }
+  }
+
+  String validarApelidoOuEmpresa(int num) {
+    String apelidoOuEmpresa;
+    if (num == 1) {
+      while (true) {
+        stdout.write('Digite seu apelido: ');
+        apelidoOuEmpresa = stdin.readLineSync() ?? '';
+        if (apelidoOuEmpresa == '') {
+          continue;
+        } else {
+          return apelidoOuEmpresa;
+        }
+      }
+    } else if (num == 2) {
+      while (true) {
+        stdout.write('Digite o nome da sua empresa: ');
+        apelidoOuEmpresa = stdin.readLineSync() ?? '';
+        if (apelidoOuEmpresa == '') {
+          continue;
+        } else {
+          return apelidoOuEmpresa;
+        }
+      }
+    }
+    return 'invalido';
+  }
 }
