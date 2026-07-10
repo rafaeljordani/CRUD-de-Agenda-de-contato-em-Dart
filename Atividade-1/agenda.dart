@@ -1,13 +1,10 @@
-import 'dart:isolate';
-
-import 'Main.dart';
 import 'contato_empresarial.dart';
 import 'contato_pessoal.dart';
 import 'contatos.dart';
 import 'dart:io';
 
 class Agenda {
-  List<Contato> contatos = [];
+  List<Contato> _contatos = [];
 
   void adicionarContato() {
     String nome = validarNome();
@@ -23,6 +20,7 @@ class Agenda {
         email,
         apelido,
       );
+      _contatos.add(contatoPessoal);
     } else if (empresaOuPessoal() == 2) {
       String empresa = validarApelidoOuEmpresa(2);
 
@@ -32,6 +30,7 @@ class Agenda {
         email,
         empresa,
       );
+      _contatos.add(contatoEmpresarial);
     }
 
     // contatos.add(contato); lembra de renovar isso aqui
@@ -71,7 +70,7 @@ class Agenda {
 
       i -= 1; // Ajusta o índice para corresponder à lista (0-based)
 
-      if ((i >= contatos.length) || (i < 0)) {
+      if ((i >= _contatos.length) || (i < 0)) {
         print('Indice inválido, tente novamente');
         continue;
       }
@@ -133,7 +132,7 @@ class Agenda {
   }
 
   bool temContatoSalvo() {
-    if (contatos.isEmpty) {
+    if (_contatos.isEmpty) {
       print('Nenhum contato cadastrado');
       return false;
     }
@@ -142,9 +141,9 @@ class Agenda {
 
   void listarListaDeContato() {
     int i;
-    for (i = 0; i < contatos.length; i++) {
+    for (i = 0; i < _contatos.length; i++) {
       print(
-        '${i + 1} - Nome: ${contatos[i].nome} | Telefone: ${contatos[i].telefone} | Email: ${contatos[i].email}',
+        '${i + 1} - Nome: ${_contatos[i].nome} | Telefone: ${_contatos[i].telefone} | Email: ${_contatos[i].email}',
       );
     }
   }
@@ -153,7 +152,7 @@ class Agenda {
     listarListaDeContato();
     int i = validarIndece('remover');
     if (confirmarRemocao()) {
-      contatos.removeAt(i);
+      _contatos.removeAt(i);
       print('Contato removido com sucesso!');
     } else {
       print('O usuário não foi removido');
@@ -166,9 +165,10 @@ class Agenda {
     String nomeEditado = validarNome();
     String telefoneEditado = validarTelefone();
     String emailEditado = validarEmail();
-
-    contatos[i] = Contato(nomeEditado, telefoneEditado, emailEditado);
-
+    _contatos[i].nome = nomeEditado;
+    _contatos[i].telefone = telefoneEditado;
+    _contatos[i].email = emailEditado;
+    _contatos[i].editarEspecial();
     print('Contato editado com sucesso!');
   }
 
@@ -184,12 +184,12 @@ class Agenda {
     String nomeDigitado = validarNome().toLowerCase();
     bool achouNome = false;
 
-    for (int i = 0; i < contatos.length; i++) {
-      String nomeLista = contatos[i].nome.toLowerCase();
+    for (int i = 0; i < _contatos.length; i++) {
+      String nomeLista = _contatos[i].nome.toLowerCase();
 
       if (nomeLista.contains(nomeDigitado)) {
         print(
-          '${i + 1} - Nome: ${contatos[i].nome} | Telefone: ${contatos[i].telefone} | Email: ${contatos[i].email}',
+          '${i + 1} - Nome: ${_contatos[i].nome} | Telefone: ${_contatos[i].telefone} | Email: ${_contatos[i].email}',
         );
         achouNome = true;
       }
@@ -204,9 +204,9 @@ class Agenda {
     String nomeMinusculo = nome.toLowerCase();
     bool temRepetido = false;
 
-    for (int i = 0; i < contatos.length; i++) {
+    for (int i = 0; i < _contatos.length; i++) {
       if (i == indiceIgnorar) continue;
-      if (nomeMinusculo == contatos[i].nome.toLowerCase()) {
+      if (nomeMinusculo == _contatos[i].nome.toLowerCase()) {
         temRepetido = true;
       }
     }
@@ -232,10 +232,10 @@ class Agenda {
   int empresaOuPessoal() {
     while (true) {
       stdout.write(
-        'Esse contato é uma conta pessoal ou Empresarial? \n 1: Pessoal 2: Empresarial',
+        'Esse contato é uma conta pessoal ou Empresarial? \n 1: Pessoal 2: Empresarial: ',
       );
       int numOpcao = int.tryParse(stdin.readLineSync() ?? '0') ?? 0;
-      if ((numOpcao != 1) || (numOpcao != 2)) {
+      if ((numOpcao != 1) && (numOpcao != 2)) {
         print('Resposta invalida, tente novamente');
         continue;
       } else if (numOpcao == 1) {
